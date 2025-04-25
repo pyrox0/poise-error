@@ -128,16 +128,16 @@ async fn try_handle_error<U>(
         }
         FrameworkError::Command { mut error, ctx, .. } => {
             let invocation_string = ctx.invocation_string();
-            let description = format!("```\n{error:?}\n```");
+            let description = format!("\n{error:?}\n");
 
             if error.is::<UserError>() {
                 dedup_error_chain(&mut error);
-                warn!("User made an error when invoking {invocation_string:?}: {error:#}");
+                warn!("User Error while running {invocation_string:?}: {error:#}");
                 ctx.send(
                     CreateReply::default()
                         .embed(
                             CreateEmbed::new()
-                                .title("You seem to have made an error")
+                                .title("Error")
                                 .description(description)
                                 .footer(CreateEmbedFooter::new(MAYBE_BOT_ERROR))
                                 .color(WARNING),
@@ -148,12 +148,12 @@ async fn try_handle_error<U>(
                 .await?;
             } else {
                 dedup_error_chain(&mut error);
-                error!("An error occurred whilst executing {invocation_string:?}: {error:#}");
+                error!("Internal Error while running {invocation_string:?}: {error:#}");
                 ctx.send(
                     CreateReply::default()
                         .embed(
                             CreateEmbed::new()
-                                .title("An internal error has occurred")
+                                .title("Internal Error")
                                 .description(description)
                                 .footer(CreateEmbedFooter::new(BOT_ERROR))
                                 .color(DANGER),
@@ -165,7 +165,7 @@ async fn try_handle_error<U>(
             }
         }
         FrameworkError::SubcommandRequired { ctx } => {
-            warn!("User attempted to invoke a command, which requires a subcommand, without a subcommand: {:?}", ctx.invocation_string());
+            warn!("User attempted to invoke command /{} without a subcommand: {:?}", ctx.invoked_command_name(), ctx.invocation_string());
 
             let prefix = ctx.prefix();
 
@@ -173,7 +173,7 @@ async fn try_handle_error<U>(
                 CreateReply::default()
                     .embed(
                         CreateEmbed::new()
-                            .title("Subcommand required")
+                            .title("Subcommand Required")
                             .description(format!(
                                 "You must specify one of the following subcommands:\n\n{}",
                                 ctx.command()
@@ -201,8 +201,8 @@ async fn try_handle_error<U>(
                 CreateReply::default()
                     .embed(
                         CreateEmbed::new()
-                            .title("Panicked")
-                            .description("A really bad error happened and the bot panicked! You should contact a bot developer and tell them to check the logs.")
+                            .title("Panic")
+                            .description("A severe error has occurred. Please contact the bot's developer.")
                             .color(DANGER),
                     )
                     .reply(true)
@@ -228,7 +228,7 @@ async fn try_handle_error<U>(
                 CreateReply::default()
                     .embed(
                         CreateEmbed::new()
-                            .title("Failed to parse argument")
+                            .title("Argument Parsing Error")
                             .description(description)
                             .footer(CreateEmbedFooter::new(MAYBE_BOT_ERROR))
                             .color(WARNING),
@@ -249,7 +249,7 @@ async fn try_handle_error<U>(
                 CreateReply::default()
                     .embed(
                         CreateEmbed::new()
-                            .title("Command structure mismatch")
+                            .title("Command Structure Mismatch")
                             .description(format!("```\n{description}\n```"))
                             .footer(CreateEmbedFooter::new(BOT_ERROR))
                             .color(DANGER),
@@ -269,7 +269,7 @@ async fn try_handle_error<U>(
                 CreateReply::default()
                     .embed(
                         CreateEmbed::new()
-                            .title("Cooldown hit")
+                            .title("Cooldown Hit")
                             .description(format!("You must wait **~{} seconds** before you can use this command again.", remaining_cooldown.as_secs()))
                             .color(WARNING),
                     )
