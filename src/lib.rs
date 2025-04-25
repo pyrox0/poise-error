@@ -137,7 +137,7 @@ async fn try_handle_error<U>(
                     CreateReply::default()
                         .embed(
                             CreateEmbed::new()
-                                .title("Error")
+                                .title("⚠️ Error")
                                 .description(description)
                                 .footer(CreateEmbedFooter::new(MAYBE_BOT_ERROR))
                                 .color(WARNING),
@@ -153,7 +153,7 @@ async fn try_handle_error<U>(
                     CreateReply::default()
                         .embed(
                             CreateEmbed::new()
-                                .title("Internal Error")
+                                .title("⚠️ Internal Error")
                                 .description(description)
                                 .footer(CreateEmbedFooter::new(BOT_ERROR))
                                 .color(DANGER),
@@ -201,7 +201,7 @@ async fn try_handle_error<U>(
                 CreateReply::default()
                     .embed(
                         CreateEmbed::new()
-                            .title("Panic")
+                            .title("🚨 Panic")
                             .description("A severe error has occurred. Please contact the bot's developer.")
                             .color(DANGER),
                     )
